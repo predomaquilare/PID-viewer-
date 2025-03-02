@@ -2,6 +2,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_lifecycle/lifecycle_node.hpp>
+#include <std_msgs/msg/float32.hpp>
 
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
@@ -25,15 +26,22 @@ namespace pid
     void configPubSub();
     void configTimers();
 
-    rclcpp_lifecycle::LifecyclePublisher<xbox_msgs::msg::Controller>::SharedPtr publisher_;
+    rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Float32>::SharedPtr publisher_;
     rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::Time last_time;
+
+    float actual_error;
+    float last_error;
     float _rate_;
+
+    float proportional;
+    float derivative;
+    float integrative;
+
     float _kp_;
     float _kd_;
     float _ki_;
-
-
+    float _goal_;
   };
 
-} // namespace xbox_controller_node
-
+} // namespace pid
