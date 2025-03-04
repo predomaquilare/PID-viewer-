@@ -40,7 +40,7 @@ add_library(${library_name} SHARED
 
 # Incluir diretórios de cabeçalho para a biblioteca
 target_include_directories(${library_name} PRIVATE include)
-
+target_link_libraries(${executable_name} ${library_name})
 # Dependências do executável
 ament_target_dependencies(${executable_name}
   ${dependencies}

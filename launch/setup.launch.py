@@ -18,7 +18,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             'parameters_file',
-            default_value=PathJoinSubstitution([FindPackageShare('PIDviewer'),
+            default_value=PathJoinSubstitution([FindPackageShare('pid_viewer'),
                                                 'params', 'parameters.yaml']),
             description='Path to the parameters file'
         )
@@ -27,9 +27,9 @@ def generate_launch_description():
     parameters_file = LaunchConfiguration('parameters_file')
 
     calculator_lifecycle_node = LifecycleNode(
-        package='PIDviewer', 
-        executable='PIDviewer',
-        name='PIDviewer',
+        package='pid_viewer', 
+        executable='pid_viewer',
+        name='pid_viewer',
         namespace='',
         output='screen',
         parameters=[parameters_file],

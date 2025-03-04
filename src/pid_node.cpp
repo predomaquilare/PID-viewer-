@@ -17,6 +17,8 @@ namespace pid
         actual_error = 0;
         _rate_ = 10.0; // Initialize _rate_ with a default value
     }
+    pid::~pid() {}
+
 
     CallbackReturn pid::on_configure(const rclcpp_lifecycle::State &)
     {
@@ -51,22 +53,31 @@ namespace pid
         return CallbackReturn::SUCCESS;
     }
 
-    void pid::update()
-    {
-        float dt = (this->now() - last_time).seconds();
-        float error = _goal_ - actual_error; // Use _goal_ instead of goal
-        proportional = _kp_ * error;
-        derivative = (dt > 0) ? (error - last_error) / dt : 0.0;
-        integrative += error * dt;
-
-        float pid = proportional + derivative + integrative;
-        auto msg = std_msgs::msg::Float32();
-        msg.data = pid;
-
-        last_error = error;
-        last_time = this->now();
-        publisher_->publish(msg);
+  void pid::update()
+  {
+      // Obtém o tempo atual a partir do mesmo clock usado anteriormente
+       rclcpp::Time now = this->get_clock()->now();
+  
+    // Garante que 'last_time' tem um valor inicial válido
+    if (last_time.nanoseconds() == 0) {
+        last_time = now;
     }
+
+    float dt = (now - last_time).seconds();
+    float error = _goal_ - actual_error;
+    proportional = _kp_ * error;
+    derivative = (dt > 0) ? (error - last_error) / dt : 0.0;
+    integrative += error * dt;
+
+    float pid = proportional + derivative + integrative;
+    auto msg = std_msgs::msg::Float32();
+    msg.data = pid;
+
+    last_error = error;
+    last_time = now; // Atualiza last_time com a mesma fonte de tempo
+    publisher_->publish(msg);
+}
+
 
     void pid::configPubSub()
     {
