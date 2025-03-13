@@ -1,7 +1,7 @@
-PIDviewer:
+pid_viewer:
   ros__parameters:
     rate: 10.0
-    kp: 0.0
+    kp: 0.3
     kd: 0.0
-    ki: 0.0
+    ki: 0.3
     goal: 1000.0

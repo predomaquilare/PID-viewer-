@@ -15,7 +15,6 @@ namespace pid
         derivative = 0;
         integrative = 0;
         actual_error = 0;
-        _rate_ = 10.0; // Initialize _rate_ with a default value
     }
     pid::~pid() {}
 
@@ -66,13 +65,18 @@ namespace pid
     float dt = (now - last_time).seconds();
     float error = _goal_ - actual_error;
     proportional = _kp_ * error;
-    derivative = (dt > 0) ? (error - last_error) / dt : 0.0;
-    integrative += error * dt;
+    derivative = (dt > 0) ? _kd_*((error - last_error) / dt) : 0.0;
+    integrative += _ki_ * (error * dt);
 
     float pid = proportional + derivative + integrative;
     auto msg = std_msgs::msg::Float32();
-    msg.data = pid;
+    msg.data = actual_error;
 
+    actual_error += pid;
+
+    RCLCPP_INFO(get_logger(), "%f, %f, %f" ,error, dt, pid);
+    
+    
     last_error = error;
     last_time = now; // Atualiza last_time com a mesma fonte de tempo
     publisher_->publish(msg);
@@ -96,6 +100,13 @@ namespace pid
         get_parameter("kd", _kd_);
         get_parameter("ki", _ki_);
         get_parameter("goal", _goal_);
+        
+        RCLCPP_INFO(get_logger(), "%f" ,_rate_);
+        RCLCPP_INFO(get_logger(), "%f" ,_kp_);
+        RCLCPP_INFO(get_logger(),"%f" ,_kd_);
+        RCLCPP_INFO(get_logger(), "%f" ,_ki_);
+        RCLCPP_INFO(get_logger(), "%f" ,_goal_);
+
     }
 } // namespace pid
 
